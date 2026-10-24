@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vlad Chesnokov — Product Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./c/base.css?v=9">
+<style>
+  /* Главная (вариант D): список названий слева, большая обложка справа.
+     Старый слайдер — menu-minimal.html. */
+  html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+
+  .home {
+    position: fixed; inset: 0;
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px;
+    padding: 0 var(--gutter);
+    align-items: center;
+  }
+
+  /* ---------- Список проектов ---------- */
+  .list-wrap { grid-column: 1 / span 4; }
+  .list { list-style: none; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+  .list__item {
+    display: block; padding: 2px 0;
+    font-size: clamp(22px, 2.6vw, 40px); line-height: 1.05; letter-spacing: -0.04em;
+    color: var(--c-muted); cursor: pointer; white-space: nowrap;
+    transition: color .2s;
+  }
+  .list__item.is-active { color: var(--c-fg); }
+
+  /* ---------- Сцена ---------- */
+  .stage-col { grid-column: 5 / -1; }
+  .stage {
+    position: relative; aspect-ratio: 16 / 9; overflow: hidden;
+    background: var(--c-tile);
+  }
+  .stage.can-open { cursor: pointer; }
+  /* все обложки лежат слоями заранее; видны только текущая и приходящая */
+  .stage__layer { position: absolute; inset: 0; overflow: hidden; visibility: hidden; }
+  .stage__layer.is-on { visibility: visible; }
+  .stage__inner { position: absolute; inset: 0; overflow: hidden; }
+  .stage__inner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .stage__shade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }
+  .stage.is-loading { opacity: 0; }
+  .meta {
+    display: grid; grid-template-columns: 1fr auto; gap: 16px;
+    padding-top: 8px; overflow: hidden; height: calc(var(--leading) + 8px);
+  }
+  .meta__roll { display: block; transition: transform .5s var(--ease-io), opacity .3s; }
+  .meta__year { color: var(--c-muted); }
+
+  /* низ прибит к краю экрана — страница без прокрутки */
+  .footer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; }
+
+  /* ---------- Мобилка: лента обложек вместо списка со сценой ---------- */
+  .feed { display: none; }
+  @media (max-width: 767.98px) {
+    html, body { height: auto; overflow: visible; overscroll-behavior: auto; }
+    .home { display: none; }
+    .feed {
+      display: grid; gap: 56px; list-style: none; margin: 0;
+      padding: calc(var(--header-h) + 48px) var(--gutter) 64px;
+    }
+    .card { display: block; }
+    .card__cover { aspect-ratio: 16 / 10; overflow: hidden; background: var(--c-tile); }
+    .card__cover img { width: 100%; height: 100%; object-fit: cover; }
+    .card__title { display: block; padding-top: 14px; font-size: 18px; line-height: 1.1; letter-spacing: -0.03em; }
+    /* серые подписи — одной строкой: услуги слева, год справа */
+    .card__row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 6px; color: var(--c-muted); }
+    /* неактивные — обложка как есть, серое название и справа Soon */
+    .feed .is-soon .card__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-top: 14px; color: var(--c-muted); }
+    .feed .is-soon .card__title { padding-top: 0; }
+    .footer { position: static; padding-top: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .meta__roll { transition: none; }
+  }
+</style>
+<script src="./c/pt.js?v=5"></script>
+</head>
+<body>
+
+<header class="header" id="header">
+  <a class="h-desk" href="./" data-i18n="name">Vlad Chesnokov, Product Designer, 2026</a>
+  <a class="h-mob" href="./" data-i18n="nameShort">Vlad Chesnokov</a>
+  <time class="header__clock" data-clock aria-label="Local time in Moscow">Moscow --:--</time>
+  <!-- TODO: подставить реальные контакты -->
+  <div class="socials h-desk">
+    <a href="https://t.me/rxwlex" target="_blank" rel="noopener">Telegram</a>
+    <a href="./media/cv/Vlad-Chesnokov-CV.pdf" download="Vlad-Chesnokov-CV.pdf">CV</a>
+  </div>
+  <button class="h-mob h-btn h-btn--end" id="menuToggle" type="button" aria-expanded="false" aria-controls="mobileMenu" data-i18n="menu">Menu</button>
+  <div class="h-panel" id="mobileMenu">
+    <ul>
+      <li><a href="https://t.me/rxwlex" target="_blank" rel="noopener">Telegram</a></li>
+      <li><a href="./media/cv/Vlad-Chesnokov-CV.pdf" download="Vlad-Chesnokov-CV.pdf">CV</a></li>
+      <li><a href="https://www.behance.net/chesdsgn" target="_blank" rel="noopener">Behance</a></li>
+      <li><a href="https://dribbble.com/chesdsgn" target="_blank" rel="noopener">Dribbble</a></li>
+      <li><a href="https://dprofile.ru/chesdsgn" target="_blank" rel="noopener">Dprofile</a></li>
+      <li><a href="#">LinkedIn</a></li>
+    </ul>
+  </div>
+</header>
+
+<main class="home">
+  <h1 class="sr-only">Works</h1>
+  <div class="list-wrap">
+    <ul class="list" id="list" aria-label="Projects"></ul>
+  </div>
+  <div class="stage-col">
+    <div class="stage is-loading" id="stage" role="link" tabindex="-1"></div>
+    <div class="meta" aria-live="polite">
+      <span class="meta__roll" id="metaTags"></span>
+      <span class="meta__roll meta__year" id="metaYear"></span>
+    </div>
+  </div>
+</main>
+
+<!-- телефон: лента обложек (на десктопе скрыта) -->
+<ul class="feed" id="feed" aria-label="Projects" data-pt></ul>
+
+<!-- низ: время · профили · права; на телефоне профили — в Menu -->
+<footer class="footer" id="footer">
+  <nav class="footer__links" aria-label="Profiles">
+    <a href="https://www.behance.net/chesdsgn" target="_blank" rel="noopener">Behance</a>
+    <a href="https://dribbble.com/chesdsgn" target="_blank" rel="noopener">Dribbble</a>
+    <a href="https://dprofile.ru/chesdsgn" target="_blank" rel="noopener">Dprofile</a>
+    <a href="#">LinkedIn</a>
+  </nav>
+  <span class="footer__rights" data-i18n="rights">All rights reserved ©</span>
+</footer>
+
+<script src="./c/data.js?v=76"></script>
+<script>
+(() => {
+  // data.js рассчитан на страницы в c/ — пути к картинкам поправляем на уровень выше
+  const P = window.PROJECTS.map((p) => ({ ...p, image: p.image.replace(/^\.\.\/(\.\.\/)?media\//, "./media/") }));
+  const N = P.length;
+  const status = (p) => T(p.status); // View ↗ / NDA / Soon на текущем языке
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const mob = matchMedia("(max-width: 767.98px)"); // на телефоне вместо сцены — лента
+  const wrap = (i) => ((i % N) + N) % N;
+  const canOpen = (p) => p.status !== "soon";
+  const caseHref = (p) => `./c/project.html?p=${encodeURIComponent(p.slug)}`;
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const $ = (id) => document.getElementById(id);
+
+  // ---------- Старт: проект из #slug (возврат из кейса) ----------
+  const startSlug = decodeURIComponent(location.hash.slice(1));
+  const startIdx = Math.max(0, P.findIndex((p) => p.slug === startSlug));
+  let returning = false;
+  try { returning = !!startSlug && sessionStorage.getItem("works:back") === startSlug; } catch {}
+
+  // ---------- Лента для телефона ----------
+  const feed = $("feed");
+  feed.innerHTML = P.map((p) => {
+    if (!canOpen(p)) return `<li class="is-soon" id="f-${esc(p.slug)}"><div class="card">
+      <div class="card__cover"><img src="${esc(p.image)}" alt="" loading="lazy" decoding="async"></div>
+      <div class="card__head"><span class="card__title">${esc(p.title)}</span><span>Soon</span></div></div></li>`;
+    const tag = "a";
+    return `<li class="${canOpen(p) ? "" : "is-soon"}" id="f-${esc(p.slug)}"><${tag} class="card"${canOpen(p) ? ` href="${caseHref(p)}"` : ""}>
+      <div class="card__cover"><img src="${esc(p.image)}" alt="" loading="lazy" decoding="async"></div>
+      <span class="card__title">${esc(p.title)}</span>
+      <div class="card__row"><span>${esc(p.tags || "")}</span><span>${esc(p.status === "soon" ? T("soon") : p.year)}</span></div></${tag}></li>`;
+  }).join("");
+  // запоминаем открытый кейс, чтобы «назад» вернул к его карточке
+  feed.addEventListener("click", (e) => {
+    const li = e.target instanceof Element && e.target.closest("li");
+    if (li && li.querySelector("a.card")) history.replaceState(null, "", `#${li.id.slice(2)}`);
+  });
+  // вернулись из кейса — показываем его карточку
+  if (mob.matches && startSlug) $(`f-${startSlug}`)?.scrollIntoView({ block: "center" });
+
+  // ---------- Список проектов ----------
+  const list = $("list");
+  list.innerHTML = P.map((p, i) =>
+    `<li class="list__item${canOpen(p) ? "" : " is-soon"}" data-i="${i}" role="button" tabindex="-1">${esc(p.title)}</li>`).join("");
+  const items = [...list.children];
+
+  // Колесо/свайп/стрелки двигают цель, после паузы — доводка к ближайшему проекту
+  let pos = startIdx, target = startIdx;
+  let lastInput = -1e9, snapped = true, lastDir = 1;
+  const nudge = (d) => { target += d; lastDir = Math.sign(d) || lastDir; lastInput = performance.now(); snapped = false; };
+  const goTo = (i) => {
+    const cur = wrap(Math.round(target));
+    let d = i - cur; if (d > N / 2) d -= N; if (d < -N / 2) d += N;
+    target = Math.round(target) + d; pos = target; snapped = true; lastDir = Math.sign(d) || lastDir;
+    setActive(i); // сразу, не дожидаясь кадра
+  };
+  const rowH = 40;
+
+  // колесо — только без мыши (тачпады планшетов и т. п.); на ПК проекты выбираются наведением
+  addEventListener("wheel", (e) => {
+    if (fine || mob.matches) return;
+    if (e.target instanceof Element && e.target.closest(".header")) return;
+    e.preventDefault();
+    let dy = e.deltaY; if (e.deltaMode === 1) dy *= 16;
+    nudge(dy / 260);
+  }, { passive: false });
+
+  // тач / перо: свайп по всему экрану
+  let drag = null;
+  addEventListener("pointerdown", (e) => {
+    if (mob.matches || e.pointerType === "mouse" || (e.target instanceof Element && e.target.closest(".header"))) return;
+    drag = { y: e.clientY, y0: e.clientY, t: performance.now(), v: 0 };
+  });
+  addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    const dy = drag.y - e.clientY, now = performance.now();
+    nudge(dy / rowH);
+    drag.v = dy / Math.max(1, now - drag.t); drag.y = e.clientY; drag.t = now;
+  });
+  addEventListener("pointerup", () => {
+    if (!drag) return;
+    if (Math.abs(drag.y0 - drag.y) > 6) { target += Math.max(-3, Math.min(3, drag.v * 6)); lastInput = -1e9; }
+    drag = null;
+  });
+  addEventListener("pointercancel", () => { drag = null; });
+
+  // наведение: проект под курсором становится активным
+  if (fine) items.forEach((it) => it.addEventListener("mouseenter", () => goTo(+it.dataset.i)));
+
+  // клавиатура
+  addEventListener("keydown", (e) => {
+    if (mob.matches) return;
+    if (["ArrowDown", "PageDown"].includes(e.key)) { e.preventDefault(); goTo(wrap(Math.round(target) + 1)); }
+    else if (["ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); goTo(wrap(Math.round(target) - 1)); }
+    else if (e.key === "Enter" && !(e.target instanceof Element && e.target.closest("a, button"))) openCase();
+  });
+
+  // клик по строке: неактивная — выбрать, активная — открыть кейс
+  items.forEach((it) => it.addEventListener("click", () => {
+    const i = +it.dataset.i;
+    if (i === active) openCase(); else goTo(i);
+  }));
+
+  // ---------- Сцена ----------
+  // Все обложки сразу кладём слоями и декодируем; страница показывает сцену, когда всё готово.
+  // Шторка — встречные translate у слоя и его содержимого: работает на видеокарте, без
+  // перерисовки (clip-path на больших картинках давал рывки).
+  const stage = $("stage");
+  const EASE = "cubic-bezier(.65, 0, .35, 1)";
+  const DUR = 800;
+  const layers = P.map((p) => {
+    const layer = document.createElement("div");
+    layer.className = "stage__layer";
+    layer.innerHTML = `<div class="stage__inner"><img alt="${esc(p.title)}" decoding="sync" draggable="false"></div><div class="stage__shade"></div>`;
+    const img = layer.querySelector("img"); img.src = p.image;
+    stage.appendChild(layer);
+    return { layer, inner: layer.firstElementChild, img, shade: layer.lastElementChild,
+             ready: img.decode().catch(() => {}) };
+  });
+  const allReady = Promise.race([Promise.all(layers.map((l) => l.ready)), new Promise((r) => setTimeout(r, 6000))]);
+
+  // Переходы по очереди: пока шторка едет, новые выборы только запоминаются,
+  // после неё — сразу к последнему выбранному (без промежуточных).
+  let busy = false, onTop = -1, z = 1;
+  const showImage = async (i, dir) => {
+    busy = true;
+    await allReady;
+    const inc = layers[i], out = onTop >= 0 ? layers[onTop] : null;
+    inc.layer.style.zIndex = ++z;
+    inc.layer.classList.add("is-on");
+    if (!out || reduce) {
+      if (out) out.layer.classList.remove("is-on");
+      onTop = i; busy = false; return afterShow();
+    }
+    const d = dir >= 0 ? 1 : -1;                         // 1 — кадр приходит снизу
+    const opt = { duration: DUR, easing: EASE };
+    const all = [
+      inc.layer.animate([{ transform: `translate3d(0, ${d * 100}%, 0)` }, { transform: "translate3d(0, 0, 0)" }], opt),
+      inc.inner.animate([{ transform: `translate3d(0, ${-d * 100}%, 0)` }, { transform: "translate3d(0, 0, 0)" }], opt),
+      inc.img.animate([{ transform: "scale(1.12)" }, { transform: "scale(1)" }], { duration: DUR + 300, easing: "cubic-bezier(.2, .8, .2, 1)" }),
+      out.inner.animate([{ transform: "translate3d(0, 0, 0) scale(1)" }, { transform: `translate3d(0, ${-d * 12}%, 0) scale(1.04)` }], opt),
+      out.shade.animate([{ opacity: 0 }, { opacity: .4 }], opt),
+    ];
+    await all[0].finished.catch(() => {});
+    out.layer.classList.remove("is-on");
+    all.forEach((a) => a.cancel());                      // уходящий слой возвращаем в исходное
+    onTop = i;
+    busy = false;
+    afterShow();
+  };
+  const afterShow = () => { if (active !== shown) runShow(); };
+  allReady.then(() => {
+    stage.classList.remove("is-loading");
+    if (!reduce && !returning && !(window.PT && PT.entering)) stage.animate([{ clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0 0)" }], { duration: 1100, easing: EASE });
+  });
+
+  // мета под сценой: строка прокатывается вверх/вниз
+  const metaTags = $("metaTags"), metaYear = $("metaYear");
+  const rollMeta = (p, dir) => {
+    [[metaTags, p.tags], [metaYear, p.status === "soon" ? T("soon") : p.year]].forEach(([el, text]) => {
+      if (reduce) { el.textContent = text; return; }
+      el.animate([{ transform: "none", opacity: 1 }, { transform: `translateY(${dir >= 0 ? -100 : 100}%)`, opacity: 0 }], { duration: 220, easing: "ease-in" })
+        .finished.then(() => {
+          el.textContent = text;
+          el.animate([{ transform: `translateY(${dir >= 0 ? 100 : -100}%)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 320, easing: "cubic-bezier(.2, .8, .2, 1)" });
+        });
+    });
+  };
+
+  // ---------- Активный проект ----------
+  let active = -1, shown = -1, pendingShow = null;
+  const setActive = (i) => {
+    if (i === active) return;
+    active = i;
+    // название подсвечивается сразу
+    items.forEach((it) => it.classList.toggle("is-active", +it.dataset.i === i));
+    const p = P[i];
+    stage.classList.toggle("can-open", canOpen(p));
+    stage.setAttribute("aria-label", `${p.title} — ${canOpen(p) ? "open case" : "coming soon"}`);
+    // кадр — только когда курсор задержался: при быстром проведении промежуточные
+    // проекты пропускаются, и сразу открывается тот, на котором остановились
+    clearTimeout(pendingShow);
+    if (shown < 0) runShow(); else pendingShow = setTimeout(runShow, 90);
+  };
+  function runShow() {
+    if (busy || active === shown) return;
+    const dir = shown < 0 || active > shown ? 1 : -1; // ниже по списку — шторка снизу
+    shown = active;
+    showImage(active, dir); rollMeta(P[active], dir);
+  }
+
+  // ---------- Открыть кейс ----------
+  function openCase() {
+    const p = P[active];
+    if (!canOpen(p)) return deny();
+    history.replaceState(null, "", `#${p.slug}`);
+    try { sessionStorage.setItem("works:back", p.slug); } catch {}
+    window.PT ? PT.go(caseHref(p)) : (location.href = caseHref(p));
+  }
+  function deny() {
+    if (reduce) return;
+    items[active].animate([{ transform: "translateX(0)" }, { transform: "translateX(-5px)" }, { transform: "translateX(5px)" },
+      { transform: "translateX(-3px)" }, { transform: "translateX(0)" }], { duration: 360, easing: "ease-out" });
+  }
+  stage.addEventListener("click", openCase);
+
+  // ---------- Цикл ----------
+  let prevT = performance.now();
+  const frame = (now) => {
+    const dt = Math.min(0.05, Math.max(0.001, (now - prevT) / 1000)); prevT = now;
+    if (!snapped && !drag && now - lastInput > 140) {
+      // доводка: если прокрутили хотя бы на 0.2 строки в сторону движения — к следующей
+      const base = lastDir > 0 ? Math.floor(target) : Math.ceil(target);
+      target = Math.abs(target - base) >= 0.2 ? base + lastDir : base;
+      snapped = true;
+    }
+    pos += (target - pos) * (1 - Math.exp(-(reduce ? 60 : 9) * dt));
+    if (Math.abs(target - pos) < 0.0005) pos = target;
+    const a = wrap(Math.round(pos));
+    if (a !== active) {
+      const dir = active < 0 ? 1 : (((a - active) % N) + N) % N <= N / 2 ? 1 : -1;
+      setActive(a, dir);
+    }
+    requestAnimationFrame(frame);
+  };
+
+  // смена языка: подписи под сценой и кнопка меню
+  addEventListener("langchange", () => {
+    if (active >= 0) metaYear.textContent = P[active].status === "soon" ? T("soon") : P[active].year;
+    menuToggle.textContent = header.classList.contains("is-menu-open") ? T("close") : T("menu");
+  });
+
+  // ---------- Мобильное меню ----------
+  const header = $("header"), menuToggle = $("menuToggle");
+  menuToggle.addEventListener("click", () => {
+    const open = !header.classList.contains("is-menu-open");
+    header.classList.toggle("is-menu-open", open);
+    menuToggle.textContent = open ? T("close") : T("menu");
+    menuToggle.setAttribute("aria-expanded", String(open));
+  });
+
+  // ---------- Старт ----------
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

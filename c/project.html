@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project — Vlad Chesnokov</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./base.css?v=9">
+<style>
+
+  .wrap { padding: 0 var(--gutter); }
+
+  /* ---------- About + info ---------- */
+  .about {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 24px 8px;
+    padding: 200px 0 120px; /* первый экран: текст, под ним сразу картинки */
+  }
+  .about__title { grid-column: 1 / span 3; margin: 0; font: inherit; }
+  .about__text {
+    grid-column: 5 / span 7;
+    margin: 0;
+    font-size: clamp(18px, 2vw, 28px);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    text-wrap: pretty;
+    white-space: pre-line; /* \n\n в тексте — новый абзац */
+  }
+  .info {
+    grid-column: 5 / span 8;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin: 48px 0 0;
+  }
+  .info dt { color: var(--c-muted); margin-bottom: 6px; }
+  .info dd { margin: 0; }
+  .info dd span { display: block; }
+  .info dd a { display: inline-flex; gap: .3em; transition: opacity .2s; }
+  .info dd a i { font-style: normal; transition: transform .3s var(--ease-out); }
+  .info dd a:hover, .info dd a:focus-visible { opacity: .55; }
+  .info dd a:hover i, .info dd a:focus-visible i { transform: translate(2px, -2px); }
+
+  /* ---------- Gallery: цельная сетка, без подписей ---------- */
+  .gallery { display: grid; gap: 4px; }
+  /* пара — две равные половины, оба кадра вертикальные 4:5 */
+  .g-pair, .g-pair.rev { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  /* проекты с edge: true — кадры встык и от края до края экрана */
+  .gallery--edge { gap: 0; margin: 0 calc(var(--gutter) * -1); }
+  .gallery--edge .g-pair { gap: 0; }
+  .g-pair .shot { aspect-ratio: 4 / 5; }
+  .shot {
+    position: relative; overflow: hidden; margin: 0;
+    background: var(--c-tile);
+  }
+  .shot img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    /* кадры показываются целиком: без приближения и параллакса (он обрезал края) */
+  }
+  .shot--wide { aspect-ratio: 16 / 9; }
+  .shot--tall { aspect-ratio: 4 / 5; }
+  .shot--fill { aspect-ratio: auto; }      /* высота = высоте вертикального кадра в паре */
+  .g-pair .shot img { transform: none; }  /* вертикальные кадры — целиком, без приближения и параллакса */
+  .shot--strip img { transform: none; } /* кадр своей пропорции — целиком */
+
+  /* ---------- Навигация: Works / Название проекта ---------- */
+  .crumbs { display: flex; flex-wrap: wrap; gap: 0 .35em; }
+  .crumbs a, .crumbs span { color: var(--c-muted); }
+  .crumbs a { transition: color .15s; }
+  .crumbs a:hover, .crumbs a:focus-visible { color: var(--c-fg); }
+  .crumbs h1 { margin: 0; font: inherit; }
+
+  /* ---------- Prev / Next: заголовок «More projects» + две половины ---------- */
+  .pn { margin-top: 240px; }
+  .pn img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .pn .lbl { color: var(--c-muted); }
+  .pn-split { display: flex; gap: 4px; height: 62vh; padding-bottom: var(--gutter); }
+  .pn-split a {
+    position: relative; flex: 1 1 0; overflow: hidden; background: var(--c-tile);
+    transition: flex-grow .8s var(--ease-io);
+  }
+  .pn-split:hover a:hover, .pn-split a:focus-visible { flex-grow: 1.7; }
+  .pn-split img { transform: scale(1.06); transition: transform 1.2s var(--ease-out); }
+  .pn-split a:hover img { transform: scale(1); }
+
+  /* Заголовок над половинами — тем же размером, что текст «About the project» */
+  .pn__title {
+    margin: 0 0 24px;
+    font-size: clamp(18px, 2vw, 28px);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+  }
+
+  @media (max-width: 767.98px) {
+    .about { padding: 120px 0 72px; }
+    .about__title, .about__text, .info { grid-column: 1 / -1; }
+    .info { grid-template-columns: 1fr 1fr; gap: 20px 8px; }
+    .g-pair, .g-pair.rev { grid-template-columns: 1fr; }
+    .g-pair .shot { aspect-ratio: 4 / 5; }
+    .pn-split { flex-direction: column; height: auto; }
+    .pn-split a { height: 36vh; flex: none; }
+
+  }
+</style>
+<script src="./pt.js?v=5"></script>
+</head>
+<body>
+
+<header class="header" id="header">
+  <a class="h-desk" href="../" data-i18n="name">Vlad Chesnokov, Product Designer, 2026</a>
+  <a class="h-mob" href="../" data-i18n="nameShort">Vlad Chesnokov</a>
+  <time class="header__clock" data-clock aria-label="Local time in Moscow">Moscow --:--</time>
+  <!-- TODO: подставить реальные контакты -->
+  <div class="socials h-desk">
+    <a href="https://t.me/rxwlex" target="_blank" rel="noopener">Telegram</a>
+    <a href="../media/cv/Vlad-Chesnokov-CV.pdf" download="Vlad-Chesnokov-CV.pdf">CV</a>
+  </div>
+  <button class="h-mob h-btn h-btn--end" id="menuToggle" type="button" aria-expanded="false" aria-controls="mobileMenu" data-i18n="menu">Menu</button>
+
+  <div class="h-panel" id="mobileMenu">
+    <ul>
+      <li><a href="https://t.me/rxwlex" target="_blank" rel="noopener">Telegram</a></li>
+      <li><a href="../media/cv/Vlad-Chesnokov-CV.pdf" download="Vlad-Chesnokov-CV.pdf">CV</a></li>
+      <li><a href="https://www.behance.net/chesdsgn" target="_blank" rel="noopener">Behance</a></li>
+      <li><a href="https://dribbble.com/chesdsgn" target="_blank" rel="noopener">Dribbble</a></li>
+      <li><a href="https://dprofile.ru/chesdsgn" target="_blank" rel="noopener">Dprofile</a></li>
+      <li><a href="#">LinkedIn</a></li>
+    </ul>
+  </div>
+</header>
+
+
+<main>
+  <div class="wrap">
+    <section class="about">
+      <!-- Works / Название: Works возвращает назад к списку работ -->
+      <nav class="about__title crumbs" aria-label="Breadcrumb">
+        <a id="crumbBack" href="../" data-i18n="works">Works</a><span aria-hidden="true">/</span><h1 id="crumbTitle"></h1>
+      </nav>
+      <!-- текст «О проекте» пока черновой (data.js) — заменить реальным -->
+      <p class="about__text" id="aboutText"></p>
+      <dl class="info">
+        <div><dt data-i18n="services">Services</dt><dd id="infoServices"></dd></div>
+        <div><dt data-i18n="role">Role</dt><dd>Designer</dd></div> <!-- роль одна на все кейсы, не переводится -->
+        <div><dt data-i18n="year">Year</dt><dd id="infoYear"></dd></div>
+        <div><dt data-i18n="timeline">Timeline</dt><dd id="infoTimeline"></dd></div>
+        <div><dt data-i18n="studio">Studio</dt><dd id="infoStudio"></dd></div>
+      </dl>
+    </section>
+
+    <!-- Галерея пока собрана из обложки проекта — заменить реальными кадрами кейса -->
+    <section class="gallery" id="gallery" aria-label="Project images"></section>
+
+    <nav class="pn" id="pn" aria-label="More projects"></nav>
+  </div>
+</main>
+
+<footer class="footer" id="footer">
+  <nav class="footer__links" aria-label="Profiles">
+    <a href="https://www.behance.net/chesdsgn" target="_blank" rel="noopener">Behance</a>
+    <a href="https://dribbble.com/chesdsgn" target="_blank" rel="noopener">Dribbble</a>
+    <a href="https://dprofile.ru/chesdsgn" target="_blank" rel="noopener">Dprofile</a>
+    <a href="#">LinkedIn</a>
+  </nav>
+  <span class="footer__rights" data-i18n="rights">All rights reserved ©</span>
+</footer>
+
+<script src="./data.js?v=76"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+(() => {
+  const P = window.PROJECTS;
+  const N = P.length;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const params = new URLSearchParams(location.search);
+  const i = Math.max(0, P.findIndex((p) => p.slug === params.get("p")));
+  const M_OLD_HERO = { yango: "../media/yango2/01.webp", sberbank: "../media/sber/01-report.webp", msa: "../media/msa/01-hero.webp", "afi-tower": "../media/afi/01-hero.webp", ghost: "../media/ghost2/01-logo.webp", mess: "../media/mess-3200.webp", etalon: "../media/etalon/01-logo.webp", seligdar: "../media/seligdar/01-hero.webp", onesty: "../media/onesty/01-hero.webp" };
+  // ?v=old — прежняя версия галереи (если сохранена в data.js)
+  const p = params.get("v") === "old" && P[i].galleryOld
+    ? { ...P[i], gallery: P[i].galleryOld, galleryOnly: P[i].galleryOld[0].strip ? true : false, edge: !!P[i].galleryOld[0].strip, hero: M_OLD_HERO[P[i].slug] || P[i].image }
+    : P[i];
+  // «More projects» и списки ведут только на открываемые кейсы (не «soon»)
+  const open = P.filter((q) => q.status !== "soon" && q.slug !== p.slug);
+  const after = open.filter((q) => P.indexOf(q) > i), before = open.filter((q) => P.indexOf(q) < i);
+  const next = after[0] || before[0];
+  const prev = before[before.length - 1] || after[after.length - 1];
+  const pad = (n) => String(n + 1).padStart(2, "0");
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  document.title = `${p.title} — Vlad Chesnokov`;
+  $("aboutText").textContent = aboutOf(p);
+
+  // строки инфо без значения скрываем целиком, а не показываем пустой заголовок
+  const info = (id, value, html = false) => {
+    const dd = $(id);
+    if (!value) { dd.parentElement.hidden = true; return; }
+    dd[html ? "innerHTML" : "textContent"] = value;
+  };
+  info("infoServices", p.tags && p.tags.split(",").map((t) => `<span>${esc(t.trim())}</span>`).join(""), true);
+  info("infoYear", p.year);
+  info("infoTimeline", p.timeline);
+  info("infoStudio", p.studio && `<a href="${esc(p.studio.url)}" target="_blank" rel="noopener">${esc(p.studio.name)}<i aria-hidden="true">↗</i></a>`, true);
+
+  // ---------- Gallery: строки из данных проекта (data.js → GALLERIES), иначе — из обложки ----------
+  const shot = (src, cls = "", alt = "", style = "") =>
+    `<figure class="shot ${cls}"${style ? ` style="${style}"` : ""}>` +
+    `<img src="${sized(src, 2048)}" alt="${esc(alt)}" loading="${alt ? "eager" : "lazy"}" decoding="async" data-parallax></figure>`; // первый кадр (с alt) — сразу
+  const pair = ([a, b], rev) => rev
+    ? `<div class="g-pair rev">${shot(a, "shot--fill")}${shot(b, "shot--tall")}</div>`
+    : `<div class="g-pair">${shot(a, "shot--tall")}${shot(b, "shot--fill")}</div>`;
+  const rows = p.gallery && p.galleryOnly ? p.gallery : p.gallery ? [{ wide: p.hero || p.image }, ...p.gallery] : [
+    { wide: p.hero || p.image },
+    { pair: [p.portrait || p.image, p.image] },
+    { wide: p.image },
+  ];
+  $("gallery").classList.toggle("gallery--edge", !!p.edge);
+  $("gallery").innerHTML = rows.map((r, k) =>
+    r.wide ? shot(r.wide, "shot--wide", k === 0 ? p.title : "") :
+    r.strip ? shot(r.strip, "shot--strip", "", `aspect-ratio: ${r.ratio}`) :
+    r.pair ? pair(r.pair, r.rev) : ""
+  ).join("");
+
+  // ---------- Prev / Next: заголовок + две половины ----------
+  const half = (q, label) => `<a href="${projectHref(q.slug)}" aria-label="${label}: ${esc(q.title)}">
+        <img src="${sized(q.image, 1600)}" alt="" loading="lazy"></a>`;
+  // если открываемый кейс всего один — одна половина на всю ширину
+  $("pn").innerHTML = !next ? "" : `
+    <h2 class="pn__title" data-i18n="more">${T("more")}</h2>
+    <div class="pn-split">
+      ${prev && prev !== next ? half(prev, "Previous project") : ""}
+      ${half(next, "Next project")}
+    </div>`;
+
+  // ---------- Works / Название ----------
+  $("crumbTitle").textContent = p.title;
+  $("crumbBack").href = `../#${encodeURIComponent(p.slug)}`;
+  // «Проекты» всегда ведёт на главную, на этот же проект (обычная ссылка — с переходом страниц)
+
+  // ---------- Мобильная шапка: имя · время · Menu (контакты); назад — через «Works /» ----------
+  const header = $("header");
+  const menuToggle = $("menuToggle");
+  menuToggle.addEventListener("click", () => {
+    const open = !header.classList.contains("is-menu-open");
+    header.classList.toggle("is-menu-open", open);
+    menuToggle.textContent = open ? T("close") : T("menu");
+    menuToggle.setAttribute("aria-expanded", String(open));
+  });
+
+  // смена языка: текст «О проекте», роль, кнопка меню (подписи с data-i18n меняются сами)
+  addEventListener("langchange", () => {
+    $("aboutText").textContent = aboutOf(p);
+    menuToggle.textContent = header.classList.contains("is-menu-open") ? T("close") : T("menu");
+  });
+
+  // ---------- Smooth scroll ----------
+  let lenis = null;
+  if (!reduce && window.Lenis) {
+    lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9 });
+    const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); };
+    requestAnimationFrame(raf);
+  }
+
+  // ---------- Scroll-linked: hero zoom-out, parallax in shots, takeover ----------
+  const para = [...document.querySelectorAll("[data-parallax]")];
+  const tick = () => {
+    const vh = innerHeight;
+    for (const img of para) {
+      const r = img.parentElement.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > vh) continue;
+      const k = (r.top + r.height / 2 - vh / 2) / vh;
+      img.style.setProperty("--py", `${k * -6}%`);
+    }
+  };
+  addEventListener("scroll", tick, { passive: true });
+  addEventListener("resize", tick);
+
+  tick();
+})();
+</script>
+</body>
+</html>

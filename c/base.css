@@ -1,0 +1,132 @@
+/* Вариант C — общая база. Типографика и шапка из стиля проекта, белый фон; сетка и поведение по референсу. */
+:root {
+  --c-bg: #fff;
+  --c-fg: #0a0a0a;
+  --c-muted: rgba(10, 10, 10, 0.42);
+  --c-line: rgba(10, 10, 10, 0.1);
+  --c-hl-bg: #0a0a0a;
+  --c-hl-fg: #fff;
+  --c-hl-muted: rgba(255, 255, 255, 0.55);
+  --c-tile: #f2f2f2;
+
+  --font: "Inter", system-ui, sans-serif;
+  --size: 11px;
+  --leading: 14px;
+  --tracking: -0.01em;
+
+  --gutter: 8px;
+  --header-h: 30px;
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --ease-io: cubic-bezier(.65, 0, .35, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--c-bg); }
+body {
+  margin: 0;
+  background: var(--c-bg);
+  color: var(--c-fg);
+  font-family: var(--font);
+  font-size: var(--size);
+  line-height: var(--leading);
+  letter-spacing: var(--tracking);
+  font-weight: 700;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+img, video { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; letter-spacing: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+:focus-visible { outline: 1px solid var(--c-fg); outline-offset: 2px; }
+.muted { color: var(--c-muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* ---------- Header (как на основной странице) ---------- */
+.header {
+  position: fixed; inset: 0 0 auto 0; z-index: 50;
+  padding: var(--gutter);
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: start;
+  mix-blend-mode: difference; color: #fff;
+}
+/* Москва и время — по центру шапки */
+.header__clock { justify-self: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Низ: профили слева, права справа */
+.footer {
+  display: grid; grid-template-columns: 1fr 1fr; align-items: end;
+  padding: var(--gutter);
+}
+.footer__clock { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.footer__links { display: flex; gap: 12px; }
+.footer__rights { justify-self: end; white-space: nowrap; }
+.footer a { transition: opacity .2s; }
+.footer a:hover { opacity: .55; }
+.header .socials { display: flex; gap: 12px; justify-self: end; }
+.header a { transition: opacity .2s; }
+.header a:hover { opacity: .55; }
+.header [aria-current="page"] { text-decoration: underline; text-underline-offset: 2px; }
+
+/* Мобильная шапка как на главной: Works · время · Menu, подпись внизу.
+   .h-desk — только десктоп, .h-mob — только мобилка. */
+.h-mob, .h-panel, .credit { display: none; }
+.h-btn {
+  justify-self: start;
+  padding: 15px 8px; margin: -15px -8px; /* хит-зона 44px без сдвига текста */
+  text-align: left;
+}
+.h-btn--end { justify-self: end; }
+.h-panel ul, .h-panel ol { list-style: none; margin: 0; padding: 0; }
+.h-panel a { display: flex; gap: 6px; padding: 4px 0; }
+.h-panel .num { opacity: .5; font-variant-numeric: tabular-nums; }
+.h-panel [aria-current="page"] { text-decoration: none; }
+.h-panel [aria-current="page"] .num { opacity: 1; }
+.credit {
+  position: fixed; left: 0; right: 0; bottom: var(--gutter); z-index: 50;
+  margin: 0; text-align: center;
+  mix-blend-mode: difference; color: #fff;
+  pointer-events: none;
+}
+.credit a { pointer-events: auto; }
+
+@media (max-width: 699.98px) {
+  /* имя слева, Telegram и CV справа; часов и Меню на телефоне нет */
+  .header { grid-template-columns: 1fr auto; column-gap: 12px; row-gap: 22px; }
+  .header .h-desk { display: none; }
+  .h-mob, .credit { display: block; }
+  .header .socials.h-desk { display: flex; gap: 12px; }
+  .header__clock, #menuToggle, #mobileMenu { display: none; }
+  /* низ: профили слева, права справа */
+  .footer__links { gap: 10px; }
+  .header.is-works-open #worksMenu { display: block; grid-column: 1 / -1; }
+}
+
+/* ---------- CV: модальное окно ---------- */
+.cv {
+  width: min(720px, calc(100vw - var(--gutter) * 2)); max-width: none;
+  height: calc(100dvh - var(--gutter) * 2); max-height: none;
+  margin: var(--gutter) auto; padding: 0; border: 0;
+  background: #f6f6f6; color: var(--c-fg); /* фон как у PDF */
+  display: none; flex-direction: column; overflow: hidden;
+}
+.cv[open] { display: flex; animation: cv-in .45s var(--ease-out); }
+.cv::backdrop { background: rgba(10, 10, 10, .45); animation: cv-fade .3s ease-out; }
+.cv__bar {
+  display: grid; grid-template-columns: 1fr auto auto; gap: 16px; align-items: center;
+  padding: 12px 16px; background: var(--c-bg);
+}
+.cv__bar a, .cv__bar button { padding: 15px 4px; margin: -15px -4px; transition: opacity .2s; }
+.cv__bar a:hover, .cv__bar button:hover { opacity: .55; }
+.cv__body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 16px; }
+.cv__body img { width: 100%; height: auto; }
+html.cv-open { overflow: hidden; }
+@keyframes cv-in { from { opacity: 0; transform: translateY(24px); } }
+@keyframes cv-fade { from { opacity: 0; } }
+@media (max-width: 699.98px) {
+  .cv { width: 100vw; height: 100dvh; margin: 0; }
+  .cv__body { padding: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .cv[open], .cv::backdrop { animation: none; } }
