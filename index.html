@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="./media/icon/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="./media/icon/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="./media/icon/apple-touch-icon.png">
 <title>Vlad Chesnokov — Product Designer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -133,7 +136,7 @@
   <span class="footer__rights" data-i18n="rights">All rights reserved ©</span>
 </footer>
 
-<script src="./c/data.js?v=76"></script>
+<script src="./c/data.js?v=77"></script>
 <script>
 (() => {
   // data.js рассчитан на страницы в c/ — пути к картинкам поправляем на уровень выше
@@ -157,13 +160,14 @@
 
   // ---------- Лента для телефона ----------
   const feed = $("feed");
-  feed.innerHTML = P.map((p) => {
+  const imgAttrs = (i) => (i < 2 ? `loading="eager"${i ? "" : ' fetchpriority="high"'}` : 'loading="lazy"');
+  feed.innerHTML = P.map((p, i) => {
     if (!canOpen(p)) return `<li class="is-soon" id="f-${esc(p.slug)}"><div class="card">
-      <div class="card__cover"><img src="${esc(p.image)}" alt="" loading="lazy" decoding="async"></div>
+      <div class="card__cover"><img src="${esc(p.image)}" alt="" ${imgAttrs(i)} decoding="async"></div>
       <div class="card__head"><span class="card__title">${esc(p.title)}</span><span>Soon</span></div></div></li>`;
     const tag = "a";
     return `<li class="${canOpen(p) ? "" : "is-soon"}" id="f-${esc(p.slug)}"><${tag} class="card"${canOpen(p) ? ` href="${caseHref(p)}"` : ""}>
-      <div class="card__cover"><img src="${esc(p.image)}" alt="" loading="lazy" decoding="async"></div>
+      <div class="card__cover"><img src="${esc(p.image)}" alt="" ${imgAttrs(i)} decoding="async"></div>
       <span class="card__title">${esc(p.title)}</span>
       <div class="card__row"><span>${esc(p.tags || "")}</span><span>${esc(p.status === "soon" ? T("soon") : p.year)}</span></div></${tag}></li>`;
   }).join("");
@@ -239,7 +243,9 @@
   }));
 
   // ---------- Сцена ----------
-  // Все обложки сразу кладём слоями и декодируем; страница показывает сцену, когда всё готово.
+  // Обложки лежат слоями. Сцена показывается, как только готова первая; остальные
+  // догружаются в фоне, а переход к проекту ждёт только свою картинку.
+  // На телефоне сцены нет (там лента) — картинки сюда не грузим.
   // Шторка — встречные translate у слоя и его содержимого: работает на видеокарте, без
   // перерисовки (clip-path на больших картинках давал рывки).
   const stage = $("stage");
@@ -248,20 +254,35 @@
   const layers = P.map((p) => {
     const layer = document.createElement("div");
     layer.className = "stage__layer";
-    layer.innerHTML = `<div class="stage__inner"><img alt="${esc(p.title)}" decoding="sync" draggable="false"></div><div class="stage__shade"></div>`;
-    const img = layer.querySelector("img"); img.src = p.image;
+    layer.innerHTML = `<div class="stage__inner"><img alt="${esc(p.title)}" decoding="async" draggable="false"></div><div class="stage__shade"></div>`;
     stage.appendChild(layer);
-    return { layer, inner: layer.firstElementChild, img, shade: layer.lastElementChild,
-             ready: img.decode().catch(() => {}) };
+    return { layer, inner: layer.firstElementChild, img: layer.querySelector("img"), shade: layer.lastElementChild, src: p.image, ready: null };
   });
-  const allReady = Promise.race([Promise.all(layers.map((l) => l.ready)), new Promise((r) => setTimeout(r, 6000))]);
+  const timeout = (ms) => new Promise((r) => setTimeout(r, ms));
+  const load = (i) => {
+    if (mob.matches) return Promise.resolve();
+    const l = layers[i];
+    if (!l.ready) {
+      // ждём загрузку (decode() у скрытой картинки может не завершиться), потом короткая раскодировка
+      l.ready = new Promise((res) => { l.img.onload = l.img.onerror = res; l.img.src = l.src; if (l.img.complete) res(); })
+        .then(() => Promise.race([l.img.decode().catch(() => {}), timeout(300)]));
+    }
+    return l.ready;
+  };
+  const firstReady = mob.matches ? Promise.resolve() : Promise.race([load(startIdx), timeout(3000)]);
+  // остальные — по одной в фоне после первой, сначала соседние
+  firstReady.then(() => {
+    if (mob.matches) return;
+    const order = layers.map((_, i) => i).sort((a, b) => Math.min(Math.abs(a - startIdx), N - Math.abs(a - startIdx)) - Math.min(Math.abs(b - startIdx), N - Math.abs(b - startIdx)));
+    order.reduce((chain, i) => chain.then(() => load(i)), Promise.resolve());
+  });
 
   // Переходы по очереди: пока шторка едет, новые выборы только запоминаются,
   // после неё — сразу к последнему выбранному (без промежуточных).
   let busy = false, onTop = -1, z = 1;
   const showImage = async (i, dir) => {
     busy = true;
-    await allReady;
+    await Promise.race([load(i), timeout(2500)]);
     const inc = layers[i], out = onTop >= 0 ? layers[onTop] : null;
     inc.layer.style.zIndex = ++z;
     inc.layer.classList.add("is-on");
@@ -286,7 +307,7 @@
     afterShow();
   };
   const afterShow = () => { if (active !== shown) runShow(); };
-  allReady.then(() => {
+  firstReady.then(() => {
     stage.classList.remove("is-loading");
     if (!reduce && !returning && !(window.PT && PT.entering)) stage.animate([{ clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0 0)" }], { duration: 1100, easing: EASE });
   });
