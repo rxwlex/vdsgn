@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="../media/icon/favicon.ico?v=2" sizes="any">
-<link rel="icon" href="../media/icon/favicon-32.png?v=2" sizes="32x32" type="image/png">
-<link rel="apple-touch-icon" href="../media/icon/apple-touch-icon.png?v=2">
+<link rel="icon" href="../media/icon/favicon.ico?v=3" sizes="any">
+<link rel="icon" href="../media/icon/favicon-32.png?v=3" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../media/icon/apple-touch-icon.png?v=3">
 <title>Project — Vlad Chesnokov</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -213,7 +213,7 @@
   // ---------- Gallery: строки из данных проекта (data.js → GALLERIES), иначе — из обложки ----------
   const shot = (src, cls = "", alt = "", style = "") =>
     `<figure class="shot ${cls}"${style ? ` style="${style}"` : ""}>` +
-    `<img src="${sized(src, 2048)}" alt="${esc(alt)}" loading="${alt ? "eager" : "lazy"}" decoding="async" data-parallax></figure>`; // первый кадр (с alt) — сразу
+    `<img src="${sized(src, 2048)}" alt="${esc(alt)}" loading="${alt ? "eager" : "lazy"}" decoding="async"></figure>`; // первый кадр (с alt) — сразу
   const pair = ([a, b], rev) => rev
     ? `<div class="g-pair rev">${shot(a, "shot--fill")}${shot(b, "shot--tall")}</div>`
     : `<div class="g-pair">${shot(a, "shot--tall")}${shot(b, "shot--fill")}</div>`;
@@ -264,26 +264,11 @@
   // ---------- Smooth scroll ----------
   let lenis = null;
   if (!reduce && window.Lenis) {
-    lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9 });
+    lenis = new Lenis({ lerp: 0.12, wheelMultiplier: 1 });
     const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); };
     requestAnimationFrame(raf);
   }
 
-  // ---------- Scroll-linked: hero zoom-out, parallax in shots, takeover ----------
-  const para = [...document.querySelectorAll("[data-parallax]")];
-  const tick = () => {
-    const vh = innerHeight;
-    for (const img of para) {
-      const r = img.parentElement.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > vh) continue;
-      const k = (r.top + r.height / 2 - vh / 2) / vh;
-      img.style.setProperty("--py", `${k * -6}%`);
-    }
-  };
-  addEventListener("scroll", tick, { passive: true });
-  addEventListener("resize", tick);
-
-  tick();
 })();
 </script>
 </body>
