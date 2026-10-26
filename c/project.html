@@ -182,7 +182,7 @@
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const params = new URLSearchParams(location.search);
   const i = Math.max(0, P.findIndex((p) => p.slug === params.get("p")));
-  const M_OLD_HERO = { yango: "../media/yango2/01.webp", sberbank: "../media/sber/01-report.webp", msa: "../media/msa/01-hero.webp", "afi-tower": "../media/afi/01-hero.webp", ghost: "../media/ghost2/01-logo.webp", mess: "../media/mess-3200.webp", etalon: "../media/etalon/01-logo.webp", seligdar: "../media/seligdar/01-hero.webp", onesty: "../media/onesty/01-hero.webp" };
+  const M_OLD_HERO = { yango: "../media/yango2/01.webp", sberbank: "../media/sber/01-report.webp", msa: "../media/msa/01-hero.webp", "afi-tower": "../media/afi/01-hero.webp", ghost: "../media/ghost3/01.webp", mess: "../media/mess-3200.webp", etalon: "../media/etalon/01-logo.webp", seligdar: "../media/seligdar/01-hero.webp", onesty: "../media/onesty/01-hero.webp" };
   // ?v=old — прежняя версия галереи (если сохранена в data.js)
   const p = params.get("v") === "old" && P[i].galleryOld
     ? { ...P[i], gallery: P[i].galleryOld, galleryOnly: P[i].galleryOld[0].strip ? true : false, edge: !!P[i].galleryOld[0].strip, hero: M_OLD_HERO[P[i].slug] || P[i].image }

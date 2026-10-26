@@ -82,6 +82,7 @@
     ],
     // AFI Tower: кадры во всю ширину
     "afi-tower": [
+      { strip: M("afi/01-hero.webp"), ratio: "3200 / 1800" },   // обложка с главной
       { strip: M("afi2/02.webp"), ratio: "3200 / 2157" },
       { strip: M("afi2/03.webp"), ratio: "3200 / 2157" },
       { strip: M("afi2/04.webp"), ratio: "3200 / 2157" },
@@ -270,6 +271,22 @@
       { strip: M("rostelecom2/21.webp"), ratio: "2560 / 1918" },
     ],
     ghost: [
+      { strip: M("ghost4/01.webp"), ratio: "3200 / 1800" },
+      { strip: M("ghost4/02.webp"), ratio: "3200 / 2014" },
+      { strip: M("ghost4/03.webp"), ratio: "3200 / 2400" },
+      { strip: M("ghost4/04.webp"), ratio: "3200 / 2400" },
+      { strip: M("ghost4/05.webp"), ratio: "3200 / 2400" },
+      { strip: M("ghost4/06.webp"), ratio: "3200 / 2083" },
+      { strip: M("ghost4/07.webp"), ratio: "3200 / 2083" },
+      { strip: M("ghost4/08.webp"), ratio: "3200 / 2006" },
+      { strip: M("ghost4/09.webp"), ratio: "3200 / 2083" },
+      { strip: M("ghost4/10.webp"), ratio: "3200 / 4013" },
+      { strip: M("ghost4/11.webp"), ratio: "3200 / 2083" },
+      { strip: M("ghost4/12.webp"), ratio: "3200 / 2006" },
+      { strip: M("ghost4/13.webp"), ratio: "3200 / 2006" },
+    ],
+    // прежняя версия Ghost — project.html?p=ghost&v=old
+    "ghost-old": [
       { strip: M("ghost3/01.webp"), ratio: "3200 / 1800" },
       { strip: M("ghost3/02.webp"), ratio: "3200 / 1419" },
       { strip: M("ghost3/03.webp"), ratio: "3200 / 2400" },
@@ -279,16 +296,6 @@
       { strip: M("ghost3/07.webp"), ratio: "3200 / 2083" },
       { strip: M("ghost3/08.webp"), ratio: "3200 / 5160" },
       { strip: M("ghost3/09.webp"), ratio: "3200 / 2083" },
-    ],
-    // прежняя версия Ghost — project.html?p=ghost&v=old
-    "ghost-old": [
-      { pair: [M("ghost2/02-mobile.webp"), M("ghost2/03-palette.webp")] },
-      { wide: M("ghost2/04-launches.webp") },
-      { pair: [M("ghost2/05-type.webp"), M("ghost2/06-poster-stability.webp")] },
-      { pair: [M("ghost2/07-poster.webp"), M("ghost2/08-icons.webp")] },
-      { wide: M("ghost2/09-team.webp") },
-      { pair: [M("ghost2/10-config.webp"), M("ghost2/11-menu.webp")] },
-      { wide: M("ghost2/12-healthy.webp") },
     ],
   };
 
@@ -305,7 +312,7 @@
       about: "Website for Ghost — a market-making desk that helps crypto teams launch tokens.",
       role: "UX/UI Designer",
       studio: { name: "Relate", url: "https://www.relate.studio/" },
-      hero: M("ghost3/01.webp"),
+      hero: M("ghost4/01.webp"),
       galleryOnly: true,
       edge: true },   // без отступов между кадрами и по бокам   // обложка страницы кейса (в слайдере остаётся image)
     { title: "Rostelecom", slug: "rostelecom", year: "2026", tags: "Annual Report", image: M("cover/rostelecom.webp"), portrait: null,
