@@ -307,6 +307,17 @@
       galleryOnly: true,   // первый кадр — сама галерея, отдельной обложки над ней нет
       edge: true,          // кадры встык и от края до края экрана
       hero: M("yango3/01.webp") },
+    { title: "Rostelecom", slug: "rostelecom", year: "2026", tags: "Annual Report", image: M("cover/rostelecom.webp"), portrait: null,
+      studio: { name: "Praxis Group", url: "https://praxis-group.ru/" },
+      hero: M("rostelecom2/01.webp"),
+      galleryOnly: true,
+      edge: true },
+    { title: "Etalon Group",     slug: "etalon",     year: "2026", tags: "Annual Report", image: M("cover/etalon.webp"),     portrait: null,
+      hero: M("etalon2/01.webp"),
+      galleryOnly: true,
+      edge: true,
+      about: "Annual and ESG reports for Etalon Group, one of Russia’s largest federal developers. The task was to combine financial results, operating metrics and strategy while moving away from standard financial-report templates. I designed both reports in the brand style with a modern layout, expressive typography and a non-standard grid.",
+      studio: { name: "Praxis Group", url: "https://praxis-group.ru/" }, },
     { title: "Ghost",      slug: "ghost",      year: "2026", tags: "Web, UI, UX", image: M("cover/ghost.webp"),      portrait: null,
       // текст по содержанию кейса в Figma — проверить формулировки
       about: "Website for Ghost — a market-making desk that helps crypto teams launch tokens.",
@@ -315,11 +326,6 @@
       hero: M("ghost4/01.webp"),
       galleryOnly: true,
       edge: true },   // без отступов между кадрами и по бокам   // обложка страницы кейса (в слайдере остаётся image)
-    { title: "Rostelecom", slug: "rostelecom", year: "2026", tags: "Annual Report", image: M("cover/rostelecom.webp"), portrait: null,
-      studio: { name: "Praxis Group", url: "https://praxis-group.ru/" },
-      hero: M("rostelecom2/01.webp"),
-      galleryOnly: true,
-      edge: true },
     { title: "AFI Tower",  slug: "afi-tower",  year: "2026", tags: "Web, UI, UX", image: M("cover/afi-tower.webp"),  portrait: null,
       hero: M("afi/01-hero.webp"),
       galleryOnly: true,
@@ -331,12 +337,6 @@
       galleryOnly: true,
       edge: true,
       about: "Mobile crypto wallet for storing assets, sending coins and swapping tokens. The task was to lower the entry barrier of Web3: make the app as simple as a neobank while keeping full DeFi functionality.", },
-    { title: "Etalon Group",     slug: "etalon",     year: "2026", tags: "Annual Report", image: M("cover/etalon.webp"),     portrait: null,
-      hero: M("etalon2/01.webp"),
-      galleryOnly: true,
-      edge: true,
-      about: "Annual and ESG reports for Etalon Group, one of Russia’s largest federal developers. The task was to combine financial results, operating metrics and strategy while moving away from standard financial-report templates. I designed both reports in the brand style with a modern layout, expressive typography and a non-standard grid.",
-      studio: { name: "Praxis Group", url: "https://praxis-group.ru/" }, },
     { title: "Web 3.0",      slug: "web3",      year: "2026", tags: "Concepting, Mobile, UI, UX", image: M("cover/web3.webp"),      portrait: null,
       hero: M("web3/01-hero.webp"),
       edge: true },   // без отступов между кадрами и по бокам
